@@ -61,8 +61,6 @@ import java.util.Set;
  */
 public abstract class BaseEntryManager implements PersistenceEntryManager {
 
-    public static final int EXPIRATION_30_DAYS = 30 * 86400;
-
 	private static final Logger LOG = LoggerFactory.getLogger(BaseEntryManager.class);
 
 	private static final Class<?>[] LDAP_ENTRY_TYPE_ANNOTATIONS = { DataEntry.class, SchemaEntry.class,
@@ -1956,12 +1954,6 @@ public abstract class BaseEntryManager implements PersistenceEntryManager {
 		if (resultExpirationValue < 0) {
 			resultExpirationValue = 0;
 		}
-
-        // if expiration is more then 30 days we must convert it to absolute Unit time stamp to avoid immediate expiration https://docs.couchbase.com/java-sdk/current/concept-docs/documents.html#setting-document-expiration
-        if (resultExpirationValue >= EXPIRATION_30_DAYS) {
-            final int now = (int) System.currentTimeMillis() / 1000;
-            resultExpirationValue = now + resultExpirationValue;
-        }
 
         return resultExpirationValue;
 	}

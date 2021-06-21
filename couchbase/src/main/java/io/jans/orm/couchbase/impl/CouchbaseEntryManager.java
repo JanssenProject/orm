@@ -6,26 +6,6 @@
 
 package io.jans.orm.couchbase.impl;
 
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
-
-import java.io.Serializable;
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.couchbase.client.core.message.kv.subdoc.multi.Mutation;
 import com.couchbase.client.java.document.json.JsonArray;
 import com.couchbase.client.java.document.json.JsonObject;
@@ -33,7 +13,6 @@ import com.couchbase.client.java.query.consistency.ScanConsistency;
 import com.couchbase.client.java.query.dsl.Expression;
 import com.couchbase.client.java.query.dsl.Sort;
 import com.couchbase.client.java.subdoc.MutationSpec;
-
 import io.jans.orm.PersistenceEntryManager;
 import io.jans.orm.annotation.AttributeName;
 import io.jans.orm.couchbase.model.ConvertedExpression;
@@ -62,6 +41,24 @@ import io.jans.orm.reflect.util.ReflectHelper;
 import io.jans.orm.search.filter.Filter;
 import io.jans.orm.util.ArrayHelper;
 import io.jans.orm.util.StringHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 /**
  * Couchbase Entry Manager
@@ -70,7 +67,9 @@ import io.jans.orm.util.StringHelper;
  */
 public class CouchbaseEntryManager extends BaseEntryManager implements Serializable {
 
-	private static final long serialVersionUID = 2127241817126412574L;
+    public static final int EXPIRATION_30_DAYS = 30 * 86400;
+
+	private static final long serialVersionUID = 2127241817126412575L;
 
     private static final Logger LOG = LoggerFactory.getLogger(CouchbaseConnectionProvider.class);
 
@@ -86,6 +85,19 @@ public class CouchbaseEntryManager extends BaseEntryManager implements Serializa
         this.operationService = operationService;
         this.FILTER_CONVERTER = new CouchbaseFilterConverter(this);
         subscribers = new LinkedList<DeleteNotifier>();
+    }
+
+    @Override
+    protected <T> Integer getExpirationValue(Object entry, Class<T> entryClass, boolean merge) {
+        Integer value = super.getExpirationValue(entry, entryClass, merge);
+
+        // if expiration is more then 30 days we must convert it to absolute Unit time stamp to avoid immediate expiration https://docs.couchbase.com/java-sdk/current/concept-docs/documents.html#setting-document-expiration
+        if (value >= EXPIRATION_30_DAYS) {
+            final int now = (int) System.currentTimeMillis() / 1000;
+            value = now + value;
+        }
+
+        return value;
     }
 
     @Override
