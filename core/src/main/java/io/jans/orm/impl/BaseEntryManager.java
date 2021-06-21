@@ -6,6 +6,38 @@
 
 package io.jans.orm.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jans.orm.PersistenceEntryManager;
+import io.jans.orm.annotation.AttributeEnum;
+import io.jans.orm.annotation.AttributeName;
+import io.jans.orm.annotation.AttributesList;
+import io.jans.orm.annotation.CustomObjectClass;
+import io.jans.orm.annotation.DN;
+import io.jans.orm.annotation.DataEntry;
+import io.jans.orm.annotation.Expiration;
+import io.jans.orm.annotation.JsonObject;
+import io.jans.orm.annotation.ObjectClass;
+import io.jans.orm.annotation.SchemaEntry;
+import io.jans.orm.exception.EntryPersistenceException;
+import io.jans.orm.exception.InvalidArgumentException;
+import io.jans.orm.exception.MappingException;
+import io.jans.orm.exception.extension.PersistenceExtension;
+import io.jans.orm.model.AttributeData;
+import io.jans.orm.model.AttributeDataModification;
+import io.jans.orm.model.AttributeDataModification.AttributeModificationType;
+import io.jans.orm.model.SearchScope;
+import io.jans.orm.operation.PersistenceOperationService;
+import io.jans.orm.reflect.property.Getter;
+import io.jans.orm.reflect.property.PropertyAnnotation;
+import io.jans.orm.reflect.property.Setter;
+import io.jans.orm.reflect.util.ReflectHelper;
+import io.jans.orm.search.filter.Filter;
+import io.jans.orm.util.ArrayHelper;
+import io.jans.orm.util.StringHelper;
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -22,46 +54,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.jans.orm.PersistenceEntryManager;
-import io.jans.orm.annotation.AttributeEnum;
-import io.jans.orm.annotation.AttributeName;
-import io.jans.orm.annotation.AttributesList;
-import io.jans.orm.annotation.CustomObjectClass;
-import io.jans.orm.annotation.DN;
-import io.jans.orm.annotation.DataEntry;
-import io.jans.orm.annotation.Expiration;
-import io.jans.orm.annotation.JsonObject;
-import io.jans.orm.annotation.ObjectClass;
-import io.jans.orm.annotation.SchemaEntry;
-import io.jans.orm.exception.InvalidArgumentException;
-import io.jans.orm.exception.MappingException;
-import io.jans.orm.exception.extension.PersistenceExtension;
-import io.jans.orm.exception.EntryPersistenceException;
-import io.jans.orm.model.AttributeData;
-import io.jans.orm.model.AttributeDataModification;
-import io.jans.orm.model.AttributeDataModification.AttributeModificationType;
-import io.jans.orm.model.SearchScope;
-import io.jans.orm.operation.PersistenceOperationService;
-import io.jans.orm.reflect.property.Getter;
-import io.jans.orm.reflect.property.PropertyAnnotation;
-import io.jans.orm.reflect.property.Setter;
-import io.jans.orm.reflect.util.ReflectHelper;
-import io.jans.orm.search.filter.Filter;
-import io.jans.orm.util.ArrayHelper;
-import io.jans.orm.util.StringHelper;
-
 /**
  * Abstract Entry Manager
  *
  * @author Yuriy Movchan Date: 10.07.2010
  */
 public abstract class BaseEntryManager implements PersistenceEntryManager {
+
+    public static final int EXPIRATION_30_DAYS = 30 * 86400;
 
 	private static final Logger LOG = LoggerFactory.getLogger(BaseEntryManager.class);
 
@@ -1957,7 +1957,13 @@ public abstract class BaseEntryManager implements PersistenceEntryManager {
 			resultExpirationValue = 0;
 		}
 
-		return resultExpirationValue;
+        // if expiration is more then 30 days we must convert it to absolute Unit time stamp to avoid immediate expiration https://docs.couchbase.com/java-sdk/current/concept-docs/documents.html#setting-document-expiration
+        if (resultExpirationValue >= EXPIRATION_30_DAYS) {
+            final int now = (int) System.currentTimeMillis() / 1000;
+            resultExpirationValue = now + resultExpirationValue;
+        }
+
+        return resultExpirationValue;
 	}
 
 	private <T> String getEntryKey(T entry, boolean caseSensetive, Getter[] propertyGetters) {
