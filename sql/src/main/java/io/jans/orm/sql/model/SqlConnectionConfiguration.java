@@ -1,4 +1,4 @@
-package io.jans.as.persistence.model.configuration;
+package io.jans.orm.sql.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,18 +12,18 @@ public class SqlConnectionConfiguration {
     private List<String> connectionUri;
     private String schemaName;
     private String serverTimezone;
-    private int useServerPrepStmts;
-    private int prepStmtCacheSqlLimit;
+    private Integer useServerPrepStmts;
+    private Integer prepStmtCacheSqlLimit;
     private Boolean cachePrepStmts;
     private Boolean cacheResultSetMetadata;
-    private int metadataCacheSize;
+    private Integer metadataCacheSize;
     private String passwordEncryptionMethod;
-    private int connectionPoolMaxTotal;
-    private int connectionPoolMaxIdle;
-    private int connectionPoolMinIdle;
-    private int createMaxWaitTimeMillis;
-    private int maxWaitTimeMillis;
-    private int minEvictableIdleTimeMillis;
+    private Integer connectionPoolMaxTotal;
+    private Integer connectionPoolMaxIdle;
+    private Integer connectionPoolMinIdle;
+    private Integer createMaxWaitTimeMillis;
+    private Integer maxWaitTimeMillis;
+    private Integer minEvictableIdleTimeMillis;
     private List<String> binaryAttributes;
     private List<String> certificateAttributes;
 
@@ -75,19 +75,19 @@ public class SqlConnectionConfiguration {
         this.serverTimezone = serverTimezone;
     }
 
-    public int getUseServerPrepStmts() {
+    public Integer getUseServerPrepStmts() {
         return useServerPrepStmts;
     }
 
-    public void setUseServerPrepStmts(int useServerPrepStmts) {
+    public void setUseServerPrepStmts(Integer useServerPrepStmts) {
         this.useServerPrepStmts = useServerPrepStmts;
     }
 
-    public int getPrepStmtCacheSqlLimit() {
+    public Integer getPrepStmtCacheSqlLimit() {
         return prepStmtCacheSqlLimit;
     }
 
-    public void setPrepStmtCacheSqlLimit(int prepStmtCacheSqlLimit) {
+    public void setPrepStmtCacheSqlLimit(Integer prepStmtCacheSqlLimit) {
         this.prepStmtCacheSqlLimit = prepStmtCacheSqlLimit;
     }
 
@@ -107,11 +107,11 @@ public class SqlConnectionConfiguration {
         this.cacheResultSetMetadata = cacheResultSetMetadata;
     }
 
-    public int getMetadataCacheSize() {
+    public Integer getMetadataCacheSize() {
         return metadataCacheSize;
     }
 
-    public void setMetadataCacheSize(int metadataCacheSize) {
+    public void setMetadataCacheSize(Integer metadataCacheSize) {
         this.metadataCacheSize = metadataCacheSize;
     }
 
@@ -123,51 +123,51 @@ public class SqlConnectionConfiguration {
         this.passwordEncryptionMethod = passwordEncryptionMethod;
     }
 
-    public int getConnectionPoolMaxTotal() {
+    public Integer getConnectionPoolMaxTotal() {
         return connectionPoolMaxTotal;
     }
 
-    public void setConnectionPoolMaxTotal(int connectionPoolMaxTotal) {
+    public void setConnectionPoolMaxTotal(Integer connectionPoolMaxTotal) {
         this.connectionPoolMaxTotal = connectionPoolMaxTotal;
     }
 
-    public int getConnectionPoolMaxIdle() {
+    public Integer getConnectionPoolMaxIdle() {
         return connectionPoolMaxIdle;
     }
 
-    public void setConnectionPoolMaxIdle(int connectionPoolMaxIdle) {
+    public void setConnectionPoolMaxIdle(Integer connectionPoolMaxIdle) {
         this.connectionPoolMaxIdle = connectionPoolMaxIdle;
     }
 
-    public int getConnectionPoolMinIdle() {
+    public Integer getConnectionPoolMinIdle() {
         return connectionPoolMinIdle;
     }
 
-    public void setConnectionPoolMinIdle(int connectionPoolMinIdle) {
+    public void setConnectionPoolMinIdle(Integer connectionPoolMinIdle) {
         this.connectionPoolMinIdle = connectionPoolMinIdle;
     }
 
-    public int getCreateMaxWaitTimeMillis() {
+    public Integer getCreateMaxWaitTimeMillis() {
         return createMaxWaitTimeMillis;
     }
 
-    public void setCreateMaxWaitTimeMillis(int createMaxWaitTimeMillis) {
+    public void setCreateMaxWaitTimeMillis(Integer createMaxWaitTimeMillis) {
         this.createMaxWaitTimeMillis = createMaxWaitTimeMillis;
     }
 
-    public int getMaxWaitTimeMillis() {
+    public Integer getMaxWaitTimeMillis() {
         return maxWaitTimeMillis;
     }
 
-    public void setMaxWaitTimeMillis(int maxWaitTimeMillis) {
+    public void setMaxWaitTimeMillis(Integer maxWaitTimeMillis) {
         this.maxWaitTimeMillis = maxWaitTimeMillis;
     }
 
-    public int getMinEvictableIdleTimeMillis() {
+    public Integer getMinEvictableIdleTimeMillis() {
         return minEvictableIdleTimeMillis;
     }
 
-    public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis) {
+    public void setMinEvictableIdleTimeMillis(Integer minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
